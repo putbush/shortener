@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
-import { EVENTS } from '../../../common/constants';
+import { PrismaService } from '@infra/prisma/prisma.service';
+import { EVENTS } from '@common/constants';
 
 @Injectable()
 export class LinkAnalyticsListener {

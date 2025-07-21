@@ -81,6 +81,12 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@common/(.*)$": "<rootDir>/common/$1",
+      "^@infra/(.*)$": "<rootDir>/infra/$1",
+      "^@links/(.*)$": "<rootDir>/links/$1",
+      "^@redirect/(.*)$": "<rootDir>/redirect/$1"
+    }
   }
 }

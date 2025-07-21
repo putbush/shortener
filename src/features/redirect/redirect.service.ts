@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Link } from '@prisma/client';
-import { PrismaService } from '../../infra/prisma/prisma.service';
-import { IRedirectService, IRedisService } from '../../common/interfaces';
-import { config } from '../../common/config';
-import { EVENTS } from '../..//common/constants';
+import { PrismaService } from '@infra/prisma/prisma.service';
+import { IRedirectService, IRedisService } from '@common/interfaces';
+import { config } from '@common/config';
+import { EVENTS } from '@common/constants';
 
 const VISITS_THRESHOLD = config.cache.visitsThreshold;
 const CACHE_EXPIRATION = config.cache.defaultExpirationHours * 60 * 60;

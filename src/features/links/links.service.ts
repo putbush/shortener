@@ -3,12 +3,12 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { PrismaService } from '@infra/prisma/prisma.service';
 import { Link } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { ERRORS } from '../../common/constants';
-import { generateCode } from '../../common/utils';
-import { ILinksService } from '../../common/interfaces';
+import { ERRORS } from '@common/constants';
+import { generateCode } from '@common/utils';
+import { ILinksService } from '@common/interfaces';
 
 @Injectable()
 export class LinksService implements ILinksService {
@@ -24,10 +24,10 @@ export class LinksService implements ILinksService {
       : null;
 
     if (alias) {
-      return this.createWithAlias(originalUrl, alias, expiresAt);
+      return await this.createWithAlias(originalUrl, alias, expiresAt);
     }
 
-    return this.createWithAutoCode(originalUrl, expiresAt);
+    return await this.createWithAutoCode(originalUrl, expiresAt);
   }
 
   private async createWithAlias(

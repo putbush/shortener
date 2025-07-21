@@ -1,13 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PrismaService } from '../../infra/prisma/prisma.service';
-import { RedisService } from '../../infra/redis/redis.service';
+import { PrismaService } from '@infra/prisma/prisma.service';
+import { RedisService } from '@infra/redis/redis.service';
 import { RedirectService } from './redirect.service';
-import { config } from '../../common/config';
+import { config } from '@common/config';
 import type { Link } from '@prisma/client';
-import { EVENTS } from '../../common/constants';
+import { EVENTS } from '@common/constants';
 
-describe('RedirectService – бизнес‑логика разрешения коротких ссылок', () => {
+describe('RedirectService - business logic for resolving short links', () => {
   const NOW = 1_700_000_000_000;
   const CODE = 'ABC123';
   const URL = 'https://example.com';
@@ -57,8 +57,8 @@ describe('RedirectService – бизнес‑логика разрешения �
     service = new RedirectService(prisma, events, redis);
   });
 
-  describe('resolve – основной метод разрешения ссылок', () => {
-    it('возвращает URL из кеша, если он есть', async () => {
+  describe('resolve - main link resolution method', () => {
+    it('should return URL from cache if available', async () => {
       mockRedisGet.mockResolvedValue(URL);
 
       const result = await service.resolve(CODE);
@@ -69,7 +69,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(mockPrismaFindUnique).not.toHaveBeenCalled();
     });
 
-    it('ищет в БД, если в кеше нет', async () => {
+    it('should search database if not in cache', async () => {
       const link: Link = {
         id: 1,
         originalUrl: URL,
@@ -92,7 +92,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(result).toBe(URL);
     });
 
-    it('выбрасывает NotFoundException, если ссылка не найдена', async () => {
+    it('should throw NotFoundException if link not found', async () => {
       mockRedisGet.mockResolvedValue(null);
       mockPrismaFindUnique.mockResolvedValue(null);
 
@@ -104,7 +104,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(mockEventsEmit).not.toHaveBeenCalled();
     });
 
-    it('удаляет истекшую ссылку и выбрасывает NotFoundException', async () => {
+    it('should delete expired link and throw NotFoundException', async () => {
       const expiredLink: Link = {
         id: 1,
         originalUrl: URL,
@@ -128,7 +128,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(mockEventsEmit).not.toHaveBeenCalled();
     });
 
-    it('кеширует популярную ссылку (visits >= 5)', async () => {
+    it('should cache popular link (visits >= 5)', async () => {
       const popularLink: Link = {
         id: 1,
         originalUrl: URL,
@@ -152,7 +152,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(mockEventsEmit).toHaveBeenCalledWith(EVENTS.LINK_VISITED, CODE);
     });
 
-    it('кеширует популярную ссылку с учетом TTL', async () => {
+    it('should cache popular link with TTL consideration', async () => {
       const futureTime = NOW + 10 * 60 * 1000; // +10 минут
       const popularLink: Link = {
         id: 1,
@@ -176,7 +176,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       );
     });
 
-    it('не кеширует непопулярную ссылку (visits < 5)', async () => {
+    it('should not cache unpopular link (visits < 5)', async () => {
       const unpopularLink: Link = {
         id: 1,
         originalUrl: URL,
@@ -198,7 +198,7 @@ describe('RedirectService – бизнес‑логика разрешения �
   });
 
   describe('интеграционные сценарии', () => {
-    it('обрабатывает полный цикл: кеш промах → БД → кеширование → событие', async () => {
+    it('should handle full cycle: cache miss → database → caching → event', async () => {
       const popularLink: Link = {
         id: 1,
         originalUrl: URL,
@@ -226,7 +226,7 @@ describe('RedirectService – бизнес‑логика разрешения �
       expect(result).toBe(URL);
     });
 
-    it('не удаляет активную ссылку с будущим expiresAt', async () => {
+    it('should not delete active link with future expiresAt', async () => {
       const futureLink: Link = {
         id: 1,
         originalUrl: URL,

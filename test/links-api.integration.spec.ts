@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PrismaService } from '../src/infra/prisma/prisma.service';
+import { PrismaService } from '@infra/prisma/prisma.service';
 import { createTestApp, cleanDatabase } from './test-utils';
 
 describe('Links API', () => {
@@ -22,7 +22,7 @@ describe('Links API', () => {
   });
 
   describe('POST /links', () => {
-    it('создает ссылку с автокодом', async () => {
+    it('should create a link with auto-generated code', async () => {
       const response = await request(app.getHttpServer())
         .post('/links')
         .send({ url: 'https://example.com' })
@@ -33,7 +33,7 @@ describe('Links API', () => {
       expect(shortUrl).toMatch(/^[a-zA-Z0-9]{7}$/);
     });
 
-    it('создает ссылку с алиасом', async () => {
+    it('should create a link with alias', async () => {
       const response = await request(app.getHttpServer())
         .post('/links')
         .send({
@@ -46,7 +46,7 @@ describe('Links API', () => {
       expect(shortUrl).toBe('my-custom-link');
     });
 
-    it('отклоняет дубликат алиаса', async () => {
+    it('should reject duplicate alias', async () => {
       const alias = 'duplicate-alias';
 
       await request(app.getHttpServer())
@@ -66,7 +66,7 @@ describe('Links API', () => {
         .expect(409);
     });
 
-    it('отклоняет неверный URL', async () => {
+    it('should reject invalid URL', async () => {
       await request(app.getHttpServer())
         .post('/links')
         .send({ url: 'not-a-valid-url' })

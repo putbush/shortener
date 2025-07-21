@@ -16,7 +16,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@infra/*": ["src/infra/*"],
+      "@links/*": ["src/links/*"],
+      "@redirect/*": ["src/redirect/*"]
+    }
   },
   "include": [
     "src/**/*",

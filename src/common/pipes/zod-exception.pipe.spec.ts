@@ -15,7 +15,7 @@ describe('ZodExceptionPipe', () => {
     pipe = new ZodExceptionPipe(testSchema);
   });
 
-  it('возвращает валидные данные при корректном input', () => {
+  it('should return valid data for correct input', () => {
     const validInput = {
       name: 'John',
       age: 25,
@@ -27,7 +27,7 @@ describe('ZodExceptionPipe', () => {
     expect(result).toEqual(validInput);
   });
 
-  it('выбрасывает BadRequestException при невалидных данных', () => {
+  it('should throw BadRequestException for invalid data', () => {
     const invalidInput = {
       name: 'J', // слишком короткое
       age: 16, // слишком молодой
@@ -37,7 +37,7 @@ describe('ZodExceptionPipe', () => {
     expect(() => pipe.transform(invalidInput)).toThrow(BadRequestException);
   });
 
-  it('формирует правильные сообщения об ошибках', () => {
+  it('should format proper error messages', () => {
     const invalidInput = {
       name: 'J',
       age: 16,
@@ -62,7 +62,7 @@ describe('ZodExceptionPipe', () => {
     }
   });
 
-  it('обрабатывает отсутствующие поля', () => {
+  it('should handle missing fields', () => {
     const incompleteInput = {
       name: 'John',
       // age отсутствует
@@ -72,7 +72,7 @@ describe('ZodExceptionPipe', () => {
     expect(() => pipe.transform(incompleteInput)).toThrow(BadRequestException);
   });
 
-  it('обрабатывает вложенные пути ошибок', () => {
+  it('should handle nested error paths', () => {
     const nestedSchema = z.object({
       user: z.object({
         profile: z.object({
@@ -100,7 +100,7 @@ describe('ZodExceptionPipe', () => {
     }
   });
 
-  it('проверяет работу strict() - отклоняет лишние поля', () => {
+  it('should check strict() behavior - reject extra fields', () => {
     const strictSchema = z
       .object({
         url: z.string(),

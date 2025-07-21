@@ -12,5 +12,11 @@
     "!src/**/*.interface.ts"
   ],
   "coverageDirectory": "../coverage",
-  "testTimeout": 30000
+  "testTimeout": 30000,
+  "moduleNameMapper": {
+    "^@common/(.*)$": "<rootDir>/../src/common/$1",
+    "^@infra/(.*)$": "<rootDir>/../src/infra/$1",
+    "^@links/(.*)$": "<rootDir>/../src/links/$1",
+    "^@redirect/(.*)$": "<rootDir>/../src/redirect/$1"
+  }
 }

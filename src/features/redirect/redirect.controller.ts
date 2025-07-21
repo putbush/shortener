@@ -1,8 +1,8 @@
 import { Controller, Get, Inject, Param, Res } from '@nestjs/common';
 import { ResolveLinkDto, ResolveLinkSchema } from './dto/resolve-link.dto';
 import { Response } from 'express';
-import { ZodExceptionPipe } from '../../common/pipes';
-import { IRedirectService } from '../../common/interfaces';
+import { ZodExceptionPipe } from '@common/pipes';
+import { IRedirectService } from '@common/interfaces';
 
 @Controller()
 export class RedirectController {

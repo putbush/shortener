@@ -2,8 +2,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/infra/prisma/prisma.service';
-import { RedisService } from '../src/infra/redis/redis.service';
+import { PrismaService } from '@infra/prisma/prisma.service';
+import { RedisService } from '@infra/redis/redis.service';
 
 export async function createTestApp(): Promise<{
   app: INestApplication;

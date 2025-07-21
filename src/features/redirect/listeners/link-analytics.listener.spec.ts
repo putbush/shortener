@@ -1,5 +1,5 @@
-import { EVENTS } from '../../../common/constants';
-import { PrismaService } from '../../../infra/prisma/prisma.service';
+import { EVENTS } from '@common/constants';
+import { PrismaService } from '@infra/prisma/prisma.service';
 import { LinkAnalyticsListener } from './link-analytics.listener';
 
 describe('LinkAnalyticsListener', () => {
@@ -19,7 +19,7 @@ describe('LinkAnalyticsListener', () => {
     listener = new LinkAnalyticsListener(prisma);
   });
 
-  it('увеличивает счетчик посещений на 1', async () => {
+  it('should increment visit counter by 1', async () => {
     const code = 'ABC123';
     mockPrismaUpdate.mockResolvedValue({
       id: 1,
@@ -35,7 +35,7 @@ describe('LinkAnalyticsListener', () => {
     });
   });
 
-  it('обрабатывает разные коды ссылок', async () => {
+  it('should handle different link codes', async () => {
     const codes = ['XYZ789', 'test123', 'shortlink'];
 
     for (const code of codes) {
@@ -51,7 +51,7 @@ describe('LinkAnalyticsListener', () => {
     expect(mockPrismaUpdate).toHaveBeenCalledTimes(3);
   });
 
-  it('обрабатывает ошибки базы данных', async () => {
+  it('should handle database errors', async () => {
     const code = 'ERROR123';
     const dbError = new Error('Database connection failed');
     mockPrismaUpdate.mockRejectedValue(dbError);
@@ -64,11 +64,11 @@ describe('LinkAnalyticsListener', () => {
     });
   });
 
-  it('правильно экспортирует константы событий', () => {
+  it('should correctly export event constants', () => {
     expect(EVENTS.LINK_VISITED).toBe('link.visited');
   });
 
-  it('метод помечен как async для обработки событий', () => {
+  it('should mark method as async for event handling', () => {
     const isAsync =
       listener.handleLinkVisited.constructor.name === 'AsyncFunction';
     expect(isAsync).toBe(true);

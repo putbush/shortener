@@ -1,9 +1,9 @@
 import { Controller, Body, Post, Inject, UseGuards } from '@nestjs/common';
 import { CreateLinkSchema, CreateLinkDto } from './dto/create-link.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { ZodExceptionPipe } from '../../common/pipes';
-import { ILinksService } from '../../common/interfaces';
-import { config } from '../../common/config';
+import { ZodExceptionPipe } from '@common/pipes';
+import { ILinksService } from '@common/interfaces';
+import { config } from '@common/config';
 
 @Controller('links')
 export class LinksController {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PrismaService } from '../src/infra/prisma/prisma.service';
+import { PrismaService } from '@infra/prisma/prisma.service';
 import { createTestApp, cleanDatabase } from './test-utils';
 
 describe('Redirect API', () => {
@@ -18,7 +18,7 @@ describe('Redirect API', () => {
   });
 
   describe('GET /:code', () => {
-    it('перенаправляет на оригинальный URL', async () => {
+    it('should redirect to original URL', async () => {
       await prisma.link.create({
         data: {
           code: 'testcode',
@@ -34,11 +34,11 @@ describe('Redirect API', () => {
       expect(response.headers.location).toBe('https://example.com');
     });
 
-    it('возвращает 404 для несуществующего кода', async () => {
+    it('should return 404 for nonexistent code', async () => {
       await request(app.getHttpServer()).get('/nonexistent').expect(404);
     });
 
-    it('возвращает 404 для истекшей ссылки', async () => {
+    it('should return 404 for expired link', async () => {
       await prisma.link.create({
         data: {
           code: 'expired',

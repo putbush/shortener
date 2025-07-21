@@ -1,7 +1,7 @@
 export const config = {
   // Database
   database: {
-    url: process.env.DATABASE_URL || 'postgresql://localhost:5432/shortener',
+    url: process.env.DATABASE_URL || 'postgresql://localhost:5432/links',
   },
 
   // Redis

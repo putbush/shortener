@@ -3,13 +3,13 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { PrismaService } from '../../infra/prisma/prisma.service';
-import { generateCode } from '../../common/utils';
-import { ERRORS } from '../../common/constants';
+import { PrismaService } from '@infra/prisma/prisma.service';
+import { generateCode } from '@common/utils';
+import { ERRORS } from '@common/constants';
 import { LinksService } from './links.service';
 import type { Link } from '@prisma/client';
 
-jest.mock('../../common/utils', () => ({
+jest.mock('@common/utils', () => ({
   generateCode: jest.fn(),
 }));
 
@@ -48,7 +48,7 @@ describe('LinksService', () => {
     service = new LinksService(prisma);
   });
 
-  it('создание с alias вызывает prisma.link.create', async () => {
+  it('should create link with alias and call prisma.link.create', async () => {
     const returned: Link = {
       id: 1,
       originalUrl: URL,
@@ -67,7 +67,7 @@ describe('LinksService', () => {
     expect(result).toEqual(returned);
   });
 
-  it('создание с TTL вычисляет expiresAt', async () => {
+  it('should calculate expiresAt when creating with TTL', async () => {
     const expiresAt = new Date(NOW + TTL_HOURS * 3600 * 1000);
     const returned: Link = {
       id: 2,
@@ -86,7 +86,7 @@ describe('LinksService', () => {
     });
   });
 
-  it('обрабатывает unique constraint ошибку', async () => {
+  it('should handle unique constraint error', async () => {
     const uniqueErr = new PrismaClientKnownRequestError('Unique failed', {
       code: ERRORS.UNIQUE_VIOLATION,
       clientVersion: '5.0.0',
@@ -98,7 +98,7 @@ describe('LinksService', () => {
     );
   });
 
-  it('обрабатывает другие ошибки', async () => {
+  it('should handle other errors', async () => {
     mockCreate.mockRejectedValue(new Error('oops'));
 
     await expect(service.create(URL, ALIAS)).rejects.toBeInstanceOf(
@@ -106,7 +106,7 @@ describe('LinksService', () => {
     );
   });
 
-  it('без alias использует транзакцию и автогенерацию', async () => {
+  it('should use transaction and auto-generation without alias', async () => {
     const GENERATED = 'ABC1234';
     mockedGenerateCode.mockReturnValue(GENERATED);
 

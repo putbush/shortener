@@ -17,7 +17,7 @@ function encodeBase62(num: number): string {
 function padRandom(s: string): string {
   const padCount = CODE_LENGTH - s.length;
   let pad = '';
-  for (let i = 0; i < padCount; ++i) {
+  for (let i = 0; i < padCount; i++) {
     pad += ALPHABET[Math.floor(Math.random() * BASE)];
   }
   return pad + s;
