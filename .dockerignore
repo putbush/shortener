@@ -1,0 +1,6 @@
+# Docker ignore patterns
+node_modules
+dist
+.git
+.env
+*.log
