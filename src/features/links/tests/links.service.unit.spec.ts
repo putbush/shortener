@@ -6,7 +6,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from '@infra/prisma/prisma.service';
 import { generateCode } from '@common/utils';
 import { ERRORS } from '@common/constants';
-import { LinksService } from './links.service';
+import { LinksService } from '../services/links.service';
 import type { Link } from '@prisma/client';
 
 jest.mock('@common/utils', () => ({
@@ -50,7 +50,7 @@ describe('LinksService', () => {
 
   it('should create link with alias and call prisma.link.create', async () => {
     const returned: Link = {
-      id: 1,
+      id: 1n,
       originalUrl: URL,
       code: ALIAS,
       createdAt: new Date(NOW),
@@ -70,7 +70,7 @@ describe('LinksService', () => {
   it('should calculate expiresAt when creating with TTL', async () => {
     const expiresAt = new Date(NOW + TTL_HOURS * 3600 * 1000);
     const returned: Link = {
-      id: 2,
+      id: 2n,
       originalUrl: URL,
       code: ALIAS,
       createdAt: new Date(NOW),
@@ -116,7 +116,7 @@ describe('LinksService', () => {
           link: {
             create: jest.fn().mockResolvedValue({ id: 42 }),
             update: jest.fn().mockResolvedValue({
-              id: 42,
+              id: 42n,
               originalUrl: URL,
               code: GENERATED,
               createdAt: new Date(NOW),

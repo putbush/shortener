@@ -2,10 +2,10 @@ import { NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@infra/prisma/prisma.service';
 import { RedisService } from '@infra/redis/redis.service';
-import { RedirectService } from './redirect.service';
 import { config } from '@common/config';
 import type { Link } from '@prisma/client';
 import { EVENTS } from '@common/constants';
+import { RedirectService } from '../services/redirect.service';
 
 describe('RedirectService - business logic for resolving short links', () => {
   const NOW = 1_700_000_000_000;
@@ -71,7 +71,7 @@ describe('RedirectService - business logic for resolving short links', () => {
 
     it('should search database if not in cache', async () => {
       const link: Link = {
-        id: 1,
+        id: 1n,
         originalUrl: URL,
         code: CODE,
         createdAt: new Date(NOW),
@@ -84,10 +84,14 @@ describe('RedirectService - business logic for resolving short links', () => {
 
       const result = await service.resolve(CODE);
 
-      expect(mockRedisGet).toHaveBeenCalledWith(CODE);
       expect(mockPrismaFindUnique).toHaveBeenCalledWith({
-        where: { code: CODE },
+        where: {
+          code: CODE,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          OR: [{ expiresAt: null }, { expiresAt: { gt: expect.any(Date) } }],
+        },
       });
+      expect(mockRedisGet).toHaveBeenCalledWith(CODE);
       expect(mockEventsEmit).toHaveBeenCalledWith(EVENTS.LINK_VISITED, CODE);
       expect(result).toBe(URL);
     });
@@ -104,33 +108,9 @@ describe('RedirectService - business logic for resolving short links', () => {
       expect(mockEventsEmit).not.toHaveBeenCalled();
     });
 
-    it('should delete expired link and throw NotFoundException', async () => {
-      const expiredLink: Link = {
-        id: 1,
-        originalUrl: URL,
-        code: CODE,
-        createdAt: new Date(NOW - 1000),
-        expiresAt: new Date(NOW - 1), // истекла
-        visits: 3,
-      };
-
-      mockRedisGet.mockResolvedValue(null);
-      mockPrismaFindUnique.mockResolvedValue(expiredLink);
-      mockPrismaDelete.mockResolvedValue(expiredLink);
-
-      await expect(service.resolve(CODE)).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
-
-      expect(mockPrismaDelete).toHaveBeenCalledWith({
-        where: { code: CODE },
-      });
-      expect(mockEventsEmit).not.toHaveBeenCalled();
-    });
-
     it('should cache popular link (visits >= 5)', async () => {
       const popularLink: Link = {
-        id: 1,
+        id: 1n,
         originalUrl: URL,
         code: CODE,
         createdAt: new Date(NOW),
@@ -155,7 +135,7 @@ describe('RedirectService - business logic for resolving short links', () => {
     it('should cache popular link with TTL consideration', async () => {
       const futureTime = NOW + 10 * 60 * 1000; // +10 минут
       const popularLink: Link = {
-        id: 1,
+        id: 1n,
         originalUrl: URL,
         code: CODE,
         createdAt: new Date(NOW),
@@ -178,7 +158,7 @@ describe('RedirectService - business logic for resolving short links', () => {
 
     it('should not cache unpopular link (visits < 5)', async () => {
       const unpopularLink: Link = {
-        id: 1,
+        id: 1n,
         originalUrl: URL,
         code: CODE,
         createdAt: new Date(NOW),
@@ -200,7 +180,7 @@ describe('RedirectService - business logic for resolving short links', () => {
   describe('интеграционные сценарии', () => {
     it('should handle full cycle: cache miss → database → caching → event', async () => {
       const popularLink: Link = {
-        id: 1,
+        id: 1n,
         originalUrl: URL,
         code: CODE,
         createdAt: new Date(NOW),
@@ -215,7 +195,11 @@ describe('RedirectService - business logic for resolving short links', () => {
 
       expect(mockRedisGet).toHaveBeenCalledWith(CODE);
       expect(mockPrismaFindUnique).toHaveBeenCalledWith({
-        where: { code: CODE },
+        where: {
+          code: CODE,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          OR: [{ expiresAt: null }, { expiresAt: { gt: expect.any(Date) } }],
+        },
       });
       expect(mockRedisSet).toHaveBeenCalledWith(
         CODE,
@@ -224,26 +208,6 @@ describe('RedirectService - business logic for resolving short links', () => {
       );
       expect(mockEventsEmit).toHaveBeenCalledWith(EVENTS.LINK_VISITED, CODE);
       expect(result).toBe(URL);
-    });
-
-    it('should not delete active link with future expiresAt', async () => {
-      const futureLink: Link = {
-        id: 1,
-        originalUrl: URL,
-        code: CODE,
-        createdAt: new Date(NOW),
-        expiresAt: new Date(NOW + 10000), // в будущем
-        visits: 1,
-      };
-
-      mockRedisGet.mockResolvedValue(null);
-      mockPrismaFindUnique.mockResolvedValue(futureLink);
-
-      const result = await service.resolve(CODE);
-
-      expect(result).toBe(URL);
-      expect(mockPrismaDelete).not.toHaveBeenCalled();
-      expect(mockEventsEmit).toHaveBeenCalledWith(EVENTS.LINK_VISITED, CODE);
     });
   });
 });

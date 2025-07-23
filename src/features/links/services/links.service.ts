@@ -8,7 +8,7 @@ import { Link } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ERRORS } from '@common/constants';
 import { generateCode } from '@common/utils';
-import { ILinksService } from '@common/interfaces';
+import { ILinksService } from '../interfaces/links.interface';
 
 @Injectable()
 export class LinksService implements ILinksService {

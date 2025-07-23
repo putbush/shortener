@@ -1,3 +1,4 @@
+import { REGEX } from '@common/constants';
 import { z } from 'zod';
 
 export const CreateLinkSchema = z
@@ -5,7 +6,7 @@ export const CreateLinkSchema = z
     url: z.url({ message: 'Unvalid URL' }),
     alias: z
       .string({ message: 'Alias must be a string' })
-      .regex(/^[a-zA-Z0-9_-]+$/, {
+      .regex(REGEX.LINK, {
         message: 'Alias can only contain letters, numbers, "-", "_"',
       })
       .min(3, 'Alias is too short')

@@ -3,12 +3,11 @@ import { RedisService } from './redis.service';
 
 @Module({
   providers: [
-    RedisService,
     {
       provide: 'IRedisService',
       useClass: RedisService,
     },
   ],
-  exports: [RedisService, 'IRedisService'],
+  exports: ['IRedisService'],
 })
 export class RedisModule {}

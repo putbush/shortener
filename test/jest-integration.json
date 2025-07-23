@@ -16,7 +16,6 @@
   "moduleNameMapper": {
     "^@common/(.*)$": "<rootDir>/../src/common/$1",
     "^@infra/(.*)$": "<rootDir>/../src/infra/$1",
-    "^@links/(.*)$": "<rootDir>/../src/links/$1",
-    "^@redirect/(.*)$": "<rootDir>/../src/redirect/$1"
+    "^@/(.*)$": "<rootDir>/../src/$1"
   }
 }

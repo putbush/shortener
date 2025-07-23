@@ -8,10 +8,12 @@ datasource db {
 }
 
 model Link {
-  id          Int       @id @default(autoincrement())
+  id          BigInt    @id @default(autoincrement())
   originalUrl String
   code        String    @unique()
   createdAt   DateTime  @default(now())
   expiresAt   DateTime?
   visits      Int       @default(0)
+  
+  @@index([code, expiresAt])
 }

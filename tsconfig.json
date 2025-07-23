@@ -20,8 +20,7 @@
     "paths": {
       "@common/*": ["src/common/*"],
       "@infra/*": ["src/infra/*"],
-      "@links/*": ["src/links/*"],
-      "@redirect/*": ["src/redirect/*"]
+      "@/*": ["src/*"],
     }
   },
   "include": [
